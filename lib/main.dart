@@ -83,6 +83,10 @@ class TodoListPage extends StatelessWidget {
                   },
                   value: todo.isCompleted,
                 ),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () => todoService.deleteItemByKey(todo.key),
+                ),
               );
             },
           );
