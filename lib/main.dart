@@ -78,7 +78,9 @@ class TodoListPage extends StatelessWidget {
               return ListTile(
                 title: Text(todo!.title),
                 leading: Checkbox(
-                  onChanged: (value) {},
+                  onChanged: (value) {
+                    todoService.updateIsCompleted(todo);
+                  },
                   value: todo.isCompleted,
                 ),
               );

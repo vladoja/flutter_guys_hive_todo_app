@@ -27,7 +27,7 @@ class TodoService {
   // Future<void> updateIsCompleted(int index, TodoItem todoItem) async {
   Future<void> updateIsCompleted(TodoItem todoItem) async {
     final box = await _box;
-    todoItem.isCompleted = todoItem.isCompleted;
+    todoItem.isCompleted = !todoItem.isCompleted;
     await box.put(todoItem.key, todoItem);
   }
 }
