@@ -24,9 +24,10 @@ class TodoService {
     await box.deleteAt(index);
   }
 
-  Future<void> updateIsCompleted(int index, TodoItem todoItem) async {
+  // Future<void> updateIsCompleted(int index, TodoItem todoItem) async {
+  Future<void> updateIsCompleted(TodoItem todoItem) async {
     final box = await _box;
     todoItem.isCompleted = todoItem.isCompleted;
-    await box.put(index, todoItem);
+    await box.put(todoItem.key, todoItem);
   }
 }
