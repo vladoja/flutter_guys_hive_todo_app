@@ -9,6 +9,6 @@ class TodoItem extends HiveObject {
   bool isCompleted;
   TodoItem({
     required this.title,
-    required this.isCompleted,
+    this.isCompleted = false,
   });
 }

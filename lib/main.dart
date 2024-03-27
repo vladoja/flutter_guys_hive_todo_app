@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'todo_item.dart';
+import 'todo_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,11 +17,13 @@ void main() async {
 
   Hive.registerAdapter(TodoItemAdapter());
 
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+
+  final TodoService _todoService = TodoService();
 
   @override
   Widget build(BuildContext context) {
@@ -30,53 +33,73 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      // home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: FutureBuilder<List<TodoItem>>(
+        future: _todoService.getAllTodos(),
+        builder:
+            (BuildContext context, AsyncSnapshot<List<TodoItem>> snapshot) {
+          List<Widget> children;
+          if (snapshot.connectionState == ConnectionState.done) {
+            return TodoListPage(
+              todoService: _todoService,
+            );
+          } else {
+            return const CircularProgressIndicator();
+          }
+        },
+      ),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+class TodoListPage extends StatelessWidget {
+  final TodoService todoService;
+  const TodoListPage({
+    Key? key,
+    required this.todoService,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController _controller = TextEditingController();
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: const Text('HIVE DB CRUD'),
+        backgroundColor: Colors.black12,
+        actions: [],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
+      body: const Placeholder(),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
+        backgroundColor: Colors.green,
+        onPressed: () async {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: const Text('Add Todo'),
+                  content: TextField(
+                    controller: _controller,
+                  ),
+                  actions: [
+                    ElevatedButton(
+                      child: const Text('Add'),
+                      onPressed: () async {
+                        if (_controller.text.isNotEmpty) {
+                          var todo = TodoItem(title: _controller.text);
+                          await todoService.addItem(todo);
+                          debugPrint('Item added:');
+                          List<TodoItem> allItems =
+                              await todoService.getAllTodos();
+                          debugPrint('Total items: ${allItems.length}');
+                          _controller.clear();
+                          Navigator.pop(context);
+                        }
+                      },
+                    )
+                  ],
+                );
+              });
+        },
         child: const Icon(Icons.add),
       ),
     );
