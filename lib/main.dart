@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'todo_item.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -11,6 +13,8 @@ void main() async {
     final appDocumentDirectory = await getApplicationDocumentsDirectory();
     Hive.init(appDocumentDirectory.path);
   }
+
+  Hive.registerAdapter(TodoItemAdapter());
 
   runApp(const MyApp());
 }
