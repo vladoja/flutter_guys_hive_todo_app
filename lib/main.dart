@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'todo_item.dart';
@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         future: _todoService.getAllTodos(),
         builder:
             (BuildContext context, AsyncSnapshot<List<TodoItem>> snapshot) {
-          List<Widget> children;
+          // List<Widget> children;
           if (snapshot.connectionState == ConnectionState.done) {
             return TodoListPage(
               todoService: _todoService,
@@ -68,7 +68,24 @@ class TodoListPage extends StatelessWidget {
         backgroundColor: Colors.black12,
         actions: [],
       ),
-      body: const Placeholder(),
+      body: ValueListenableBuilder(
+        valueListenable: Hive.box<TodoItem>('todoBox').listenable(),
+        builder: (context, Box<TodoItem> box, _) {
+          return ListView.builder(
+            itemCount: box.length,
+            itemBuilder: (context, index) {
+              final todo = box.getAt(index);
+              return ListTile(
+                title: Text(todo!.title),
+                leading: Checkbox(
+                  onChanged: (value) {},
+                  value: todo.isCompleted,
+                ),
+              );
+            },
+          );
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.green,
         onPressed: () async {
