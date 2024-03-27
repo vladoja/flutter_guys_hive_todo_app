@@ -4,9 +4,9 @@ part 'todo_item.g.dart';
 @HiveType(typeId: 1)
 class TodoItem {
   @HiveField(0)
-  final String title;
+  String title;
   @HiveField(1, defaultValue: false)
-  final bool isCompleted;
+  bool isCompleted;
   TodoItem({
     required this.title,
     required this.isCompleted,

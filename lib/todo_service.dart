@@ -9,7 +9,7 @@ class TodoService {
       await Hive.openBox<TodoItem>(_boxName);
 
   Future<int> addItem(TodoItem item) async {
-    var box = await _box;
+    final box = await _box;
     final int itemId = await box.add(item);
     return itemId;
   }
@@ -17,5 +17,16 @@ class TodoService {
   Future<List<TodoItem>> getAllTodos() async {
     final box = await _box;
     return box.values.toList();
+  }
+
+  Future<void> deleteItem(int index) async {
+    final box = await _box;
+    await box.deleteAt(index);
+  }
+
+  Future<void> updateIsCompleted(int index, TodoItem todoItem) async {
+    final box = await _box;
+    todoItem.isCompleted = todoItem.isCompleted;
+    await box.put(index, todoItem);
   }
 }
